@@ -1,5 +1,5 @@
 using System.Collections;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +12,10 @@ public class Dig : MonoBehaviour
     public Vector2 playerPos;
     public GameObject holePrefab;
     public GameObject spawnHole;
+
+    public TextMeshProUGUI counter;
+    public float numTreasuresFound;
+    public float treasureChance = 0;
 
     Coroutine doTheDigCoroutine;
     Coroutine digCoroutine;
@@ -48,6 +52,13 @@ public class Dig : MonoBehaviour
         float t = 0;
         //spawns a hole where player is standing
         spawnHole = Instantiate(holePrefab, playerPos, Quaternion.identity);
+
+        treasureChance = Random.Range(0, 3);
+        if (treasureChance >= 2)
+        {
+            numTreasuresFound += 1;
+        }
+
         while (t < 1)
         {
             t += Time.deltaTime;
@@ -60,6 +71,9 @@ public class Dig : MonoBehaviour
         //finds the players current position & adjusts the position to be where the player is standing rather then the middle of the sprite
         playerPos.x = (float)(player.transform.position.x + 0.2);
         playerPos.y = (float)(player.transform.position.y - 1.5);
+
+        //makes the counter display the number of treasure found
+        counter.text = numTreasuresFound.ToString();
 
         //checks if digging is happening, and disables the button temporarily until finished
         if (isDigging == true)
