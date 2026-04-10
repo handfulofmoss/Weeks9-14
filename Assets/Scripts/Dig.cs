@@ -8,6 +8,11 @@ public class Dig : MonoBehaviour
     public Button digButton;
     public bool isDigging = false;
 
+    public SpriteRenderer player;
+    public Vector2 playerPos;
+    public GameObject holePrefab;
+    public GameObject spawnHole;
+
     Coroutine doTheDigCoroutine;
     Coroutine digCoroutine;
 
@@ -41,6 +46,8 @@ public class Dig : MonoBehaviour
     {
         Debug.Log("Started Digging");
         float t = 0;
+        //spawns a hole where player is standing
+        spawnHole = Instantiate(holePrefab, playerPos, Quaternion.identity);
         while (t < 1)
         {
             t += Time.deltaTime;
@@ -50,6 +57,11 @@ public class Dig : MonoBehaviour
     }
     void Update()
     {
+        //finds the players current position & adjusts the position to be where the player is standing rather then the middle of the sprite
+        playerPos.x = (float)(player.transform.position.x + 0.2);
+        playerPos.y = (float)(player.transform.position.y - 1.5);
+
+        //checks if digging is happening, and disables the button temporarily until finished
         if (isDigging == true)
         {
             digButton.interactable = false;
