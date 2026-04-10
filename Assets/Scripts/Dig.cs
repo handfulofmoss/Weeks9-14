@@ -1,22 +1,36 @@
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Dig : MonoBehaviour
 {
+    //assigns the UI button
     public Button digButton;
+    //bool to check if player is currently digging or not
     public bool isDigging = false;
 
+    //assigns the player and their current position so holes can be spawned based on the players location
     public SpriteRenderer player;
     public Vector2 playerPos;
+    //prefab for dug holes
     public GameObject holePrefab;
     public GameObject spawnHole;
 
+    //counter for treasure found
     public TextMeshProUGUI counter;
     public float numTreasuresFound;
+    //the chance for a treasure to be found when digging, set to zero so sound wont play by accident
     public float treasureChance = 0;
 
+    //UnityEvents to play sound effects accordingly
+    public UnityEvent onDig;
+    public UnityEvent onTreasureFound;
+
+    //coroutine for when dig animation is happening
     Coroutine doTheDigCoroutine;
     Coroutine digCoroutine;
 
@@ -52,17 +66,23 @@ public class Dig : MonoBehaviour
         float t = 0;
         //spawns a hole where player is standing
         spawnHole = Instantiate(holePrefab, playerPos, Quaternion.identity);
+        //Invokes UnityEvent for sound effect to play for digging
+        onDig.Invoke();
 
-        treasureChance = Random.Range(0, 3);
-        if (treasureChance >= 2)
-        {
-            numTreasuresFound += 1;
-        }
-
+        //timer for how long the coroutine will run
         while (t < 1)
         {
             t += Time.deltaTime;
             yield return null;
+        }
+        //when digging, there is a 1 in 3 chance to find treasure
+        treasureChance = Random.Range(0, 3);
+        if (treasureChance >= 2)
+        {
+            //Invokes UnityEvent for sound effect to play for when a treasure is found
+            onTreasureFound.Invoke();
+            //increases the counter for number of treasures found by 1
+            numTreasuresFound += 1;
         }
         Debug.Log("Finished Digging");
     }
